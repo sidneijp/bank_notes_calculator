@@ -126,8 +126,11 @@ class InputScanner(object):
         self.prompt_message = prompt_message
         self.validators = validators
         self.cast_type = cast_type
+        self._stopped = False
 
     def __next__(self):
+        if self._stopped:
+            raise StopIteration
         if self.prompt_message:
             print(self.prompt_message, end='', flush=True)
         self._value = next(self.data_stream)
@@ -138,6 +141,7 @@ class InputScanner(object):
                 return
         self._value = self.cast(self._value)
         if self._value == self.stop_by:
+            self._stopped = True
             raise StopIteration
         return self._value
 

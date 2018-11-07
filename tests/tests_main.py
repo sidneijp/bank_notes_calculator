@@ -1,14 +1,13 @@
 from io import StringIO
 import unittest
-from unittest.mock import patch
 
-from main import main, InputScanner
+from inputs import (InputEqualsValidator, InputIntegerValidator,
+                    InputOrValidator, InputInclusiveRangeValidator,
+                    InputScanner,)
+from main import main
 
 
 class TestMain(unittest.TestCase):
-    def test_it_runs(self):
-        self.assertTrue(main())
-
     def test_parse_user_inputs(self):
         inputs = ['50', '30', '-1', '2']
         initial = '\n'.join(inputs)

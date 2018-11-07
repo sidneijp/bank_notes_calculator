@@ -57,11 +57,13 @@ class TestInputEqualsValidator(unittest.TestCase):
         self.unexpected_values = zip(self.values, [-2, 1, -100, 99])
 
     def test_expected_values(self):
+        '''Test validator with values as expected should be True.'''
         for v, e in self.expected_values:
             validator = InputEqualsValidator(v)
             self.assertTrue(validator.validate(e))
 
     def test_unexpected_values(self):
+        '''Test validator with values different from expected should be False.'''
         for v, u in self.unexpected_values:
             validator = InputEqualsValidator(v)
             self.assertFalse(validator.validate(u))
@@ -74,16 +76,19 @@ class TestInputInclusiveRangeValidator(unittest.TestCase):
         self.validator = InputInclusiveRangeValidator(self.lower, self.upper)
 
     def test_value_inside_range(self):
+        '''Test a value inside the inclusive range validator should be True.'''
         value = (self.lower + self.upper) / 2
         self.assertTrue(self.validator.validate(value))
 
     def test_value_in_range_limits(self):
+        '''Test a value in the limits of the inclusive range validator should be True.'''
         value = self.lower
         self.assertTrue(self.validator.validate(value))
         value = self.upper
         self.assertTrue(self.validator.validate(value))
 
     def test_value_out_of_range(self):
+        '''Test a value outside of the limits of the inclusive range validator should be False.'''
         value = self.lower - 1
         self.assertFalse(self.validator.validate(value))
         value = self.upper + 1
@@ -95,18 +100,24 @@ class TestInputIntegerValidator(unittest.TestCase):
         self.validator = InputIntegerValidator()
 
     def test_is_integer(self):
-        self.assertIsInstance(0, int)
+        '''Test a value is an integer or accepts a cast to integer.'''
+        self.assertTrue(self.validator.validate(0))
+        self.assertTrue(self.validator.validate(1.0))
+        self.assertTrue(self.validator.validate('2'))
 
     def test_is_not_integer(self):
-        self.assertFalse(isinstance('a', int))
-        self.assertFalse(isinstance(1.0, int))
-        self.assertFalse(isinstance([], int))
-        self.assertFalse(isinstance(tuple(), int))
-        self.assertFalse(isinstance({}, int))
+        '''Test a value is not an integer nor accepts a cast to integer.'''
+        self.assertFalse(self.validator.validate('a'))
+        self.assertFalse(self.validator.validate('2.0'))
+        self.assertFalse(self.validator.validate([]))
+        self.assertFalse(self.validator.validate(tuple()))
+        self.assertFalse(self.validator.validate({}))
 
 
 class TestInputOrValidator(unittest.TestCase):
     def test_all_validators_true(self):
+        '''Test a combination of multiple validators that all validate to True
+        against the value. They are grouped by the OR validator.'''
         validator = InputOrValidator([
             InputIntegerValidator(),
             InputEqualsValidator(0),
@@ -116,6 +127,8 @@ class TestInputOrValidator(unittest.TestCase):
         self.assertTrue(validator.validate(value))
 
     def test_none_validators_false(self):
+        '''Test a combination of multiple validators that none validate to True
+        against the value. They are grouped by the OR validator.'''
         validator = InputOrValidator([
             InputEqualsValidator(0),
             InputInclusiveRangeValidator(0, 10),
@@ -124,4 +137,12 @@ class TestInputOrValidator(unittest.TestCase):
         self.assertFalse(validator.validate(value))
 
     def test_any_validators_true(self):
-        pass
+        '''Test a combination of multiple validators where at least one validates to True
+        against the value. They are grouped by the OR validator.'''
+        validator = InputOrValidator([
+            InputIntegerValidator(),
+            InputEqualsValidator(-10),
+            InputInclusiveRangeValidator(5, 10),
+        ])
+        value = 0
+        self.assertTrue(validator.validate(value))

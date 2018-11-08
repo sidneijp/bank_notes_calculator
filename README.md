@@ -1,6 +1,6 @@
 # Bank notes calculator
 
-It alculates the minimun amount of each available notes are necessary to reach a requested monetary value.
+It calculates the minimum amount of each available notes are necessary to reach a requested monetary value.
 
 ## Setup
 

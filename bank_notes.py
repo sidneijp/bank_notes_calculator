@@ -44,7 +44,7 @@ class BankNotesCalculator(object):
         for bank_note, amount in bank_notes.items():
             bank_notes[bank_note] = remaining_value // bank_note
             remaining_value %= bank_note
-        if bank_note and remaining_value > 0:
+        if hasattr(locals, 'bank_note') and remaining_value > 0:
             bank_notes[bank_note] += 1
         return BankNotesCollection.from_dict(bank_notes)
 

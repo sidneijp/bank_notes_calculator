@@ -1,3 +1,5 @@
+import sys
+
 from bank_notes import (BankNotesCalculator, BankNotesCollection,
                         BankNotesCollectionFormatter)
 from inputs import (InputEqualsValidator, InputIntegerValidator,
@@ -5,14 +7,18 @@ from inputs import (InputEqualsValidator, InputIntegerValidator,
                     InputScanner,)
 
 
-def main():
+def main(data_stream):
     validators = [
         InputIntegerValidator(), InputOrValidator([
             InputInclusiveRangeValidator(1, 1000),
             InputEqualsValidator(-1, cast_type=int),
         ])
     ]
-    bank_notes = tuple(InputScanner(prompt_message='input: ', validators=validators))
+    scanner = InputScanner(
+        prompt_message='input: ', validators=validators,
+        data_stream=data_stream
+    )
+    bank_notes = tuple(scanner)
 
     print('')
 
@@ -23,15 +29,19 @@ def main():
         ])
     ]
 
-    for test_case in InputScanner(prompt_message='input: ', validators=validators):
+    scanner = InputScanner(
+        prompt_message='input: ', validators=validators,
+        data_stream=data_stream
+    )
+    formatter = BankNotesCollectionFormatter()
+    calculator = BankNotesCalculator()
+    for test_case in scanner:
         collection = BankNotesCollection(bank_notes, bank_notes=None)
-        calculator = BankNotesCalculator()
         collection = calculator.min_amount_bank_notes(collection, test_case)
-        formatter = BankNotesCollectionFormatter()
         print(formatter(collection))
     return True
 
 
 if __name__ == '__main__':
-    main()
+    main(sys.stdin)
 
